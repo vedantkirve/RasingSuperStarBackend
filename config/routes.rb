@@ -11,4 +11,7 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+  # Zones APIs
+  post "/zones", to: "zones#create"
+  get "/zones", to: "zones#index"
 end
