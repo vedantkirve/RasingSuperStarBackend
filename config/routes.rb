@@ -14,4 +14,7 @@ Rails.application.routes.draw do
   # Zones APIs
   post "/zones", to: "zones#create"
   get "/zones", to: "zones#index"
+
+  # Availability API
+  get "/availability", to: "availability#index"
 end
