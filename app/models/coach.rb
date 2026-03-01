@@ -4,6 +4,6 @@ class Coach < ApplicationRecord
 
   enum :status, { active: "active", inactive: "inactive" }
 
-  validates :name, :zone, :start_time, :end_time, presence: true
+  validates :name, :phone_number, :zone, :start_time, :end_time, presence: true
 end
 

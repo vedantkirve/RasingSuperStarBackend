@@ -3,6 +3,6 @@ class User < ApplicationRecord
 
   enum :status, { active: "active", inactive: "inactive" }
 
-  validates :name, presence: true
+  validates :name, :phone_number, presence: true
 end
 

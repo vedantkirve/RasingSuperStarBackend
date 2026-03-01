@@ -17,4 +17,9 @@ Rails.application.routes.draw do
 
   # Availability API
   get "/availability", to: "availability#index"
+
+  # Users, Coaches, Bookings APIs
+  post "/users", to: "users#create"
+  post "/coaches", to: "coaches#create"
+  post "/bookings", to: "bookings#create"
 end

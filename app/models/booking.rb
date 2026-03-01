@@ -7,7 +7,7 @@ class Booking < ApplicationRecord
     confirmed: "confirmed",
     cancelled: "cancelled",
     completed: "completed"
-  }, _prefix: true
+  }, prefix: true
 
   validates :user, :coach, :session_date, :start_time, :end_time, presence: true
 end
