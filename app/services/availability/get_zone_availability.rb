@@ -1,14 +1,5 @@
 module Availability
   class GetZoneAvailability
-    SLOTS = [
-      { start_time: "10:00", end_time: "11:30" },
-      { start_time: "11:30", end_time: "13:00" },
-      { start_time: "13:00", end_time: "14:30" },
-      { start_time: "14:30", end_time: "16:00" },
-      { start_time: "16:00", end_time: "17:30" },
-      { start_time: "17:30", end_time: "19:00" }
-    ].freeze
-
     def self.call(zone_id)
       new(zone_id).call
     end
@@ -64,14 +55,14 @@ module Availability
 
       coach_ids.each do |coach_id|
         booked_for_coach = booked_slots_by_date_and_coach[date][coach_id]
-        SLOTS.each do |slot|
+        BOOKING_TIME_SLOTS.each do |slot|
           slot_start = slot[:start_time]
           available_slot_starts.add(slot_start) unless booked_for_coach.include?(slot_start)
         end
       end
 
       available_slot_starts.map do |start_time|
-        slot = SLOTS.find { |s| s[:start_time] == start_time }
+        slot = BOOKING_TIME_SLOTS.find { |s| s[:start_time] == start_time }
         { start_time: slot[:start_time], end_time: slot[:end_time] }
       end
     end

@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  # Swagger/OpenAPI docs at /api-docs (API spec served by Api engine, UI by Ui engine)
+  mount Rswag::Api::Engine => '/api-docs'
+  mount Rswag::Ui::Engine => '/api-docs'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

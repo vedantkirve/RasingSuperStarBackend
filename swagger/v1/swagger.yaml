@@ -1,0 +1,420 @@
+---
+openapi: 3.0.1
+info:
+  title: Raising Superstars API
+  version: v1
+  description: API for zones, availability, users, coaches, and bookings
+paths:
+  "/availability":
+    get:
+      summary: Returns availability for a zone
+      tags:
+      - Availability
+      parameters:
+      - name: zone_id
+        in: query
+        required: true
+        description: Zone ID to get availability for
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: empty availability when zone has no coaches
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  availability:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          example: '2026-03-01'
+                        slots:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              start_time:
+                                type: string
+                                example: '10:00'
+                              end_time:
+                                type: string
+                                example: '11:30'
+                required:
+                - success
+                - availability
+  "/bookings":
+    post:
+      summary: Creates a booking
+      tags:
+      - Bookings
+      parameters: []
+      responses:
+        '201':
+          description: booking created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      user_id:
+                        type: integer
+                      coach_id:
+                        type: integer
+                      session_date:
+                        type: string
+                      start_time:
+                        type: string
+                      end_time:
+                        type: string
+                      state:
+                        type: string
+                      status:
+                        type: string
+                      created_at:
+                        type: string
+                        format: date-time
+                      updated_at:
+                        type: string
+                        format: date-time
+                required:
+                - success
+                - data
+        '500':
+          description: no coach available
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                required:
+                - success
+                - error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                booking:
+                  type: object
+                  properties:
+                    user_id:
+                      type: integer
+                      example: 1
+                    zone_id:
+                      type: integer
+                      example: 1
+                    session_date:
+                      type: string
+                      example: '2026-03-15'
+                      description: Date in YYYY-MM-DD format
+                    start_time:
+                      type: string
+                      example: '10:00'
+                      description: Time in HH:MM format
+                  required:
+                  - user_id
+                  - zone_id
+                  - session_date
+                  - start_time
+              required:
+              - booking
+  "/coaches":
+    post:
+      summary: Creates a coach
+      tags:
+      - Coaches
+      parameters: []
+      responses:
+        '201':
+          description: coach created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      email:
+                        type: string
+                        nullable: true
+                      phone_number:
+                        type: string
+                      zone_id:
+                        type: integer
+                      start_time:
+                        type: string
+                      end_time:
+                        type: string
+                      status:
+                        type: string
+                      created_at:
+                        type: string
+                        format: date-time
+                      updated_at:
+                        type: string
+                        format: date-time
+                required:
+                - success
+                - data
+        '500':
+          description: zone not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                required:
+                - success
+                - error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                coach:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: Coach Smith
+                    email:
+                      type: string
+                      example: coach@example.com
+                    phone_number:
+                      type: string
+                      example: "+1122334455"
+                    zone_id:
+                      type: integer
+                      example: 1
+                    start_time:
+                      type: string
+                      example: '09:00'
+                      description: Time in HH:MM format
+                    end_time:
+                      type: string
+                      example: '17:00'
+                      description: Time in HH:MM format
+                    status:
+                      type: string
+                      enum:
+                      - active
+                      - inactive
+                      example: active
+                  required:
+                  - name
+                  - phone_number
+                  - zone_id
+                  - start_time
+                  - end_time
+              required:
+              - coach
+  "/users":
+    post:
+      summary: Creates a user
+      tags:
+      - Users
+      parameters: []
+      responses:
+        '201':
+          description: user created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      email:
+                        type: string
+                        nullable: true
+                      phone_number:
+                        type: string
+                      status:
+                        type: string
+                      created_at:
+                        type: string
+                        format: date-time
+                      updated_at:
+                        type: string
+                        format: date-time
+                required:
+                - success
+                - data
+        '500':
+          description: invalid request - missing required fields
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                required:
+                - success
+                - error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: John Doe
+                    email:
+                      type: string
+                      example: john@example.com
+                    phone_number:
+                      type: string
+                      example: "+1234567890"
+                    status:
+                      type: string
+                      enum:
+                      - active
+                      - inactive
+                      example: active
+                  required:
+                  - name
+                  - phone_number
+              required:
+              - user
+  "/zones":
+    post:
+      summary: Creates a zone
+      tags:
+      - Zones
+      parameters: []
+      responses:
+        '201':
+          description: zone created
+        '500':
+          description: invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                required:
+                - success
+                - error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                zone:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: Zone A
+                    description:
+                      type: string
+                      example: Description of the zone
+                    status:
+                      type: string
+                      enum:
+                      - active
+                      - inactive
+                      example: active
+                  required:
+                  - name
+              required:
+              - zone
+    get:
+      summary: Lists zones
+      tags:
+      - Zones
+      responses:
+        '200':
+          description: zones list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        description:
+                          type: string
+                          nullable: true
+                        status:
+                          type: string
+                        created_at:
+                          type: string
+                          format: date-time
+                        updated_at:
+                          type: string
+                          format: date-time
+                required:
+                - success
+                - data
+servers:
+- url: http://localhost:3000
+  description: Development server

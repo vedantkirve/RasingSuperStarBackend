@@ -15,6 +15,9 @@ module Bookings
       session_date = parse_date(@params[:session_date])
       start_time = parse_time(@params[:start_time])
 
+      validate_session_date_not_in_past!(session_date)
+      validate_start_time_slot!(start_time)
+
       ActiveRecord::Base.transaction do
         coach = find_available_coach(zone.id, session_date, start_time)
 
@@ -28,7 +31,9 @@ module Bookings
           raise ActiveRecord::RecordInvalid, booking
         end
 
-        end_time = start_time + 90.minutes
+        slot = ::BOOKING_TIME_SLOTS.find { |s| s[:start_time] == start_time_str(start_time) }
+        end_time = parse_time(slot[:end_time])
+
         Booking.create!(
           coach_id: coach.id,
           user_id: user.id,
@@ -50,6 +55,33 @@ module Bookings
       booking.errors.add(:session_date, "can't be blank") if @params[:session_date].blank?
       booking.errors.add(:start_time, "can't be blank") if @params[:start_time].blank?
       raise ActiveRecord::RecordInvalid, booking if booking.errors.any?
+    end
+
+    def validate_session_date_not_in_past!(session_date)
+      return if session_date.blank?
+      return if session_date >= Time.zone.today
+
+      booking = Booking.new(session_date: session_date)
+      booking.errors.add(:session_date, "can't be in the past")
+      raise ActiveRecord::RecordInvalid, booking
+    end
+
+    def validate_start_time_slot!(start_time)
+      return if start_time.blank?
+
+      str = start_time_str(start_time)
+      return if ::VALID_BOOKING_START_TIMES.include?(str)
+
+      booking = Booking.new
+      booking.errors.add(:start_time, "is not a valid start time")
+      raise ActiveRecord::RecordInvalid, booking
+    end
+
+    def start_time_str(time_value)
+      return time_value if time_value.is_a?(String)
+      return time_value.strftime("%H:%M") if time_value.respond_to?(:strftime)
+
+      time_value.to_s
     end
 
     def find_available_coach(zone_id, session_date, start_time)

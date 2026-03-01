@@ -1,9 +1,9 @@
 class ApplicationController < ActionController::API
   before_action :authenticate_user!
 
+  rescue_from StandardError, with: :handle_internal_error
   rescue_from ActiveRecord::RecordNotFound, with: :handle_not_found
   rescue_from ActiveRecord::RecordInvalid, with: :handle_unprocessable
-  rescue_from StandardError, with: :handle_internal_error
 
   private
 
